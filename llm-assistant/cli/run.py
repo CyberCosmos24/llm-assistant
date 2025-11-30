@@ -6,7 +6,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 
-from analysis.analyser import analyze_multiple_events, analyze_single_event
+from analysis.analyzer import analyze_multiple_events, analyze_single_event
 from logs.ingest import load_json_logs, load_text_logs
 from llm.client import chat, DEFAULT_MODEL
 
