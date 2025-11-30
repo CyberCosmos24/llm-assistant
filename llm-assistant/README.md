@@ -1,5 +1,4 @@
-Here is a **clean, professional README** that explains **exactly how to install the project and use the CLI on both Linux and Windows**.
-Everything is plain-text Markdown so you can paste it directly into GitHub.
+
 
 ---
 
