@@ -16,6 +16,8 @@ if str(SRC_PATH) not in sys.path:
 from analysis.analyzer import analyze_multiple_events, analyze_single_event
 from logs.ingest import load_json_logs, load_text_logs
 from llm.client import DEFAULT_MODEL, chat
+from sources.cloudflare import fetch_cloudflare_logs
+from sources.wazuh import fetch_wazuh_alerts
 
 app = typer.Typer()
 console = Console()
@@ -60,6 +62,56 @@ def chat_command() -> None:
             continue
         reply = chat(user_input)
         console.print(f"Assistant: {reply}")
+
+
+@app.command()
+def pull_cloudflare(
+    zone_id: str,
+    api_token: str = typer.Option(..., envvar="CLOUDFLARE_API_TOKEN"),
+    start: str | None = typer.Option(None, help="Start time (RFC3339)"),
+    end: str | None = typer.Option(None, help="End time (RFC3339)"),
+    limit: int = typer.Option(100, help="Maximum records to request"),
+    analyze_result: bool = typer.Option(False, "--analyze", help="Analyze fetched logs"),
+) -> None:
+    destination, events = fetch_cloudflare_logs(zone_id, api_token, start=start, end=end, limit=limit)
+    console.print(f"Saved Cloudflare logs to {destination}")
+    if analyze_result:
+        if not events:
+            console.print("[red]No events returned to analyze.[/red]")
+            return
+        if len(events) == 1:
+            result = analyze_single_event(events[0])
+            console.print(Panel(str(result["explanation"]), title="Explanation", expand=False))
+            console.print(f"Severity: [bold]{result['severity'].value}[/bold]")
+        else:
+            result = analyze_multiple_events(events)
+            console.print(Panel(str(result["summary"]), title="Summary", expand=False))
+            console.print(f"Severity: [bold]{result['severity'].value}[/bold]")
+
+
+@app.command()
+def pull_wazuh(
+    base_url: str,
+    username: str = typer.Option(..., envvar="WAZUH_USERNAME"),
+    password: str = typer.Option(..., envvar="WAZUH_PASSWORD"),
+    limit: int = typer.Option(100, help="Maximum alerts to request"),
+    verify_ssl: bool = typer.Option(True, help="Verify TLS certificates"),
+    analyze_result: bool = typer.Option(False, "--analyze", help="Analyze fetched alerts"),
+) -> None:
+    destination, events = fetch_wazuh_alerts(base_url, username, password, limit=limit, verify_ssl=verify_ssl)
+    console.print(f"Saved Wazuh alerts to {destination}")
+    if analyze_result:
+        if not events:
+            console.print("[red]No alerts returned to analyze.[/red]")
+            return
+        if len(events) == 1:
+            result = analyze_single_event(events[0])
+            console.print(Panel(str(result["explanation"]), title="Explanation", expand=False))
+            console.print(f"Severity: [bold]{result['severity'].value}[/bold]")
+        else:
+            result = analyze_multiple_events(events)
+            console.print(Panel(str(result["summary"]), title="Summary", expand=False))
+            console.print(f"Severity: [bold]{result['severity'].value}[/bold]")
 
 
 if __name__ == "__main__":
