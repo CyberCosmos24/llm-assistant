@@ -1,117 +1,313 @@
-# LLM Assistant
+Here is a **clean, professional README** that explains **exactly how to install the project and use the CLI on both Linux and Windows**.
+Everything is plain-text Markdown so you can paste it directly into GitHub.
 
-A simple, modular assistant powered by large language models (LLMs) for natural language tasks, automation, and integration with various APIs.
+---
 
-## Features
+# **LLM Assistant – Installation & CLI Usage Guide**
 
-- **Modular Design**: Easily extendable with custom plugins and tools.
-- **LLM Integration**: Supports popular models like GPT, Llama, and Grok via APIs.
-- **Task Automation**: Handles conversations, code generation, and data analysis.
-- **Lightweight**: Minimal dependencies for quick setup and deployment.
+The LLM Assistant is a local cybersecurity tool that analyzes Cloudflare and Wazuh security events using a self-hosted LLaMA model (via Ollama).
+It is fully compatible with the **Cloudflare Free Plan** through the GraphQL Analytics API.
 
-## Installation
+This guide explains **how to install the project** and **how to use the CLI** on Linux and Windows.
 
-1. Clone the repository:
-   ```
-   git clone https://github.com/CyberCosmos24/llm-assistant.git
-   cd llm-assistant
-   ```
+---
 
-2. Install dependencies (Python 3.8+ required):
-   ```
-   pip install -r requirements.txt
-   ```
+## **1. Requirements**
 
-3. Set up environment variables:
-   - Create a `.env` file in the root directory.
-   - Add your API keys (e.g., `OPENAI_API_KEY=your_key_here`).
+Before installing, make sure you have:
 
-## Usage
+* Python **3.10 or newer**
+* Pip
+* Git
+* Ollama installed locally with the `llama3.1` model
+* A Cloudflare account (Free plan is supported)
+* (Optional) Wazuh Manager with API access
 
-### Quick Start
+---
 
-Run the assistant in interactive mode:
-```
-python main.py
-```
+# **2. Installation (Linux)**
 
-Example interaction:
-```
-User: What is the capital of France?
-Assistant: The capital of France is Paris.
-```
+### **Step 1 — Install Python & Git**
 
-### API Integration
-
-To integrate with external services:
-```python
-from llm_assistant import Assistant
-
-assistant = Assistant(model="gpt-3.5-turbo")
-response = assistant.query("Summarize this text: [your text here]")
-# LLM Assistant  
-A fully offline-capable cybersecurity assistant that works **exclusively with Cloudflare’s Free tier** and local LLaMA models.
-
-## Description
-Local security event analyzer designed for users on Cloudflare’s Free plan.  
-It pulls firewall events using the publicly available GraphQL Analytics API (firewallEventsAdaptive dataset – the only firewall log source accessible on the Free tier), optionally combines them with Wazuh alerts, normalizes everything to JSONL, and lets a self-hosted LLaMA 3.1 model (via Ollama) summarize threats, classify attacks, and recommend fixes — all without sending any data to third-party clouds.
-
-## Key Features
-- 100% compatible with Cloudflare Free tier (no paid features or Logpull required)  
-- Pulls firewall events via the official GraphQL Analytics API  
-- Optional integration with Wazuh alerts through its REST API  
-- Normalizes logs to clean JSONL format  
-- Runs analysis completely locally using Ollama + LLaMA 3.1 (70B or 8B)  
-- Interactive CLI for chatting with the model and running one-click workflows  
-- Zero data leaves your machine after logs are downloaded  
-
-## Requirements
-- Python 3.10 or newer  
-- Ollama installed with the llama3.1 model (`ollama pull llama3.1`)  
-- Cloudflare Free tier account (a Zone ID and API token with Zone Analytics read permission)  
-- Optional: Wazuh manager with API access  
-
-## Quick Installation
 ```bash
-git clone https://github.com/CyberCosmos24/llm-assistant.git
-cd llm-assistant
-pip install -r requirements.txt
+sudo apt update
+sudo apt install python3 python3-pip python3-venv git -y
+```
 
-# Start Ollama (run in background or use the desktop app)
-ollama serve &
+### **Step 2 — Install Ollama**
+
+```bash
+curl -fsSL https://ollama.com/install.sh | sh
+```
+
+Pull the model:
+
+```bash
 ollama pull llama3.1
 ```
 
-## Configuration (.env)
-Create a `.env` file in the project root (optional – you can also use CLI flags):
-```
-CLOUDFLARE_API_TOKEN=your_token_here
-CF_ZONE_ID=your_zone_id_here
-```
+### **Step 3 — Clone the repo**
 
-## Usage Examples
 ```bash
-# Interactive chat with the local model
-python cli/run.py chat
-
-# Pull the last 500 firewall events from your Free tier zone and auto-analyze
-python cli/run.py pull-cloudflare --start "2025-11-01T00:00:00Z" --limit 500 --analyze
-
-# Analyze an already downloaded log file
-python cli/run.py analyze data/logs/cloudflare/latest_events.jsonl
+git clone https://github.com/CyberCosmos24/llm-assistant
+cd llm-assistant
 ```
 
-All logs are saved with timestamps under:
-- `data/logs/cloudflare/`
-- `data/logs/wazuh/` (if used)
+### **Step 4 — Create virtual environment**
 
-## Why It Works on Free Tier Only
-This project deliberately avoids every Cloudflare endpoint that requires a paid plan:
-- No Logpull  
-- No /zones/:id/logs/received  
-- No raw HTTP request logs  
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
 
-It relies solely on the GraphQL `firewallEventsAdaptive` dataset, which is available on every Cloudflare plan, including Free.
+### **Step 5 — Install dependencies**
+
+```bash
+pip install -r requirements.txt
+```
+
+### **Step 6 — Create `.env` file**
+
+```bash
+nano .env
+```
+
+Add:
+
+```
+CLOUDFLARE_API_TOKEN=<your_token>
+CF_ZONE_ID=<your_zone_id>
+```
+
+Save and exit.
+
+### **Step 7 — Set Python path**
+
+```bash
+export PYTHONPATH=src
+```
+
+---
+
+# **3. Installation (Windows)**
+
+### **Step 1 — Install Python**
+
+Download Python 3.10+ from:
+
+[https://www.python.org/downloads/windows/](https://www.python.org/downloads/windows/)
+
+During installation, enable:
+
+**"Add python.exe to PATH"**
+
+### **Step 2 — Install Ollama**
+
+Download from:
+
+[https://ollama.com/download](https://ollama.com/download)
+
+Then pull the model:
+
+```powershell
+ollama pull llama3.1
+```
+
+### **Step 3 — Clone the repo**
+
+```powershell
+git clone https://github.com/CyberCosmos24/llm-assistant
+cd llm-assistant
+```
+
+### **Step 4 — Create virtual environment**
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+```
+
+### **Step 5 — Install dependencies**
+
+```powershell
+pip install -r requirements.txt
+```
+
+### **Step 6 — Create `.env` file**
+
+Create a file named `.env` in the project root with:
+
+```
+CLOUDFLARE_API_TOKEN=<your_token>
+CF_ZONE_ID=<your_zone_id>
+```
+
+### **Step 7 — Set Python path**
+
+```powershell
+set PYTHONPATH=src
+```
+
+---
+
+# **4. Using the CLI**
+
+Once installed, activate your environment and set the path:
+
+### Linux
+
+```bash
+source .venv/bin/activate
+export PYTHONPATH=src
+```
+
+### Windows
+
+```powershell
+.venv\Scripts\activate
+set PYTHONPATH=src
+```
+
+---
+
+# **5. CLI Commands**
+
+## **A. Chat with the model**
+
+Opens an interactive shell using your local LLaMA model.
+
+```bash
+python cli/run.py chat
+```
+
+---
+
+## **B. Analyze a log file**
+
+Input can be JSON or JSONL.
+
+```bash
+python cli/run.py analyze <path_to_file>
+```
+
+Example:
+
+```bash
+python cli/run.py analyze data/logs/cloudflare/test.jsonl
+```
+
+---
+
+## **C. Pull Cloudflare firewall events (Free Plan Compatible)**
+
+```bash
+python cli/run.py pull-cloudflare <zone_id> --api-token <token> \
+  --start <timestamp> --end <timestamp> --limit <number> --analyze
+```
+
+If `.env` contains the values, you may omit:
+
+* `<zone_id>`
+* `--api-token`
+
+Example (using .env):
+
+```bash
+python cli/run.py pull-cloudflare --limit 200 --analyze
+```
+
+---
+
+## **D. Pull Wazuh alerts**
+
+```bash
+python cli/run.py pull-wazuh <base_url> \
+  --username <user> --password <pass> --limit <n> --no-verify-ssl --analyze
+```
+
+Example:
+
+```bash
+python cli/run.py pull-wazuh https://10.0.0.50:55000 \
+  --username wazuh --password mypass --no-verify-ssl --analyze
+```
+
+---
+
+# **6. Log Storage Locations**
+
+All saved logs are stored under:
+
+```
+data/
+  logs/
+    cloudflare/    -> Cloudflare firewall events (JSONL)
+    wazuh/         -> Wazuh alerts (JSONL)
+```
+
+Everything is timestamped for easy review or re-analysis.
+
+---
+
+# **7. Cloudflare Free Plan Notes**
+
+This tool **does not** use any Enterprise-only endpoints like:
+
+* `/logs/received`
+* Raw HTTP request logs
+* Logpull API
+
+Instead, it uses:
+
+**GraphQL Analytics API**
+Dataset: **firewallEventsAdaptive**
+
+This dataset works on Free, Pro, and Business plans (with sampling and rate limits).
+
+---
+
+# **8. Automation (Linux)**
+
+To pull Cloudflare logs every 12 hours:
+
+Create a script:
+
+```bash
+nano pull_cloudflare.sh
+```
+
+Paste:
+
+```bash
+#!/bin/bash
+cd /home/youruser/llm-assistant
+source .venv/bin/activate
+export PYTHONPATH=src
+
+END=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+START=$(date -u -d "-6 hours" +"%Y-%m-%dT%H:%M:%SZ")
+
+python cli/run.py pull-cloudflare --start $START --end $END --limit 200
+```
+
+Make executable:
+
+```bash
+chmod +x pull_cloudflare.sh
+```
+
+Add to cron:
+
+```bash
+crontab -e
+```
+
+Add:
+
+```
+0 */12 * * * /home/youruser/llm-assistant/pull_cloudflare.sh >> /home/youruser/llm-assistant/cron.log 2>&1
+```
+
 
 
 
