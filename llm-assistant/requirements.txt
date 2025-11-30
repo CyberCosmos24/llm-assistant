@@ -1,0 +1,31 @@
+# Core
+requests
+python-dotenv
+pydantic
+
+# CLI / UX
+typer
+rich
+
+# Log Parsing & Data Processing
+pyyaml
+ujson
+pandas
+
+# Vector Search / Embeddings
+numpy
+scikit-learn
+
+# Optional PCAP parsing
+scapy
+
+# FastAPI (optional web API for your tool)
+fastapi
+uvicorn
+
+# Discord bot support (optional)
+discord.py
+
+# Testing
+pytest
+pytest-cov
