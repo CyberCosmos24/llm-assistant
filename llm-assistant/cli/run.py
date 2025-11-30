@@ -1,10 +1,20 @@
 """Command-line interface for the cybersecurity assistant."""
 from __future__ import annotations
 
+import sys
+from pathlib import Path
+
 import typer
 from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
+
+# Ensure the src directory is importable when running the script directly on
+# Windows or POSIX without needing to set PYTHONPATH manually.
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SRC_PATH = PROJECT_ROOT / "src"
+if str(SRC_PATH) not in sys.path:
+    sys.path.insert(0, str(SRC_PATH))
 
 from analysis.analyzer import analyze_multiple_events, analyze_single_event
 from logs.ingest import load_json_logs, load_text_logs
@@ -18,7 +28,8 @@ console = Console()
 def analyze(path: str) -> None:
     """Analyze a log file (JSON or plain text)."""
 
-    if path.endswith(".json"):
+    suffix = Path(path).suffix.lower()
+    if suffix == ".json":
         events = load_json_logs(path)
     else:
         lines = load_text_logs(path)
