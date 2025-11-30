@@ -66,7 +66,7 @@ def chat_command() -> None:
 
 @app.command()
 def pull_cloudflare(
-    zone_id: str,
+    zone_id: str = typer.Argument(..., envvar="CF_ZONE_ID"),
     api_token: str = typer.Option(..., envvar="CLOUDFLARE_API_TOKEN"),
     start: str | None = typer.Option(None, help="Start time (RFC3339)"),
     end: str | None = typer.Option(None, help="End time (RFC3339)"),
